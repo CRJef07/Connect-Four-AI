@@ -132,7 +132,7 @@ class ConnectFour:
                     if alpha >= beta:
                         break
             return column, value
-        else:  # Minimizing player
+        else:
             value = np.Inf
             column = np.random.choice(valid_locations)
             for col in valid_locations:
@@ -150,7 +150,7 @@ class ConnectFour:
             return column, value
 
     def print_board(self):
-        print("COLUMNS: \n1 2 3 4 5 6 7\n-------------")
+        print("COLUMNS: \n" + " ".join(str(i) for i in range(1, self.COLS + 1)))
         for r in range(self.ROWS - 1, -1, -1):
             for c in range(self.COLS):
                 print(self.board[r][c], end=" ")
@@ -160,11 +160,11 @@ class ConnectFour:
     def play(self):
         while True:
             game_over = False
-            turn = 0  # Player 1 starts
+            turn = 0
 
             while not game_over:
-                # Player 1 input
-                if turn == 0:
+
+                if turn == 0:  # Player 1 input
                     col = int(input("Player 1, choose a column (1-7): "))
                     col = col - 1
 
@@ -183,7 +183,7 @@ class ConnectFour:
                     else:
                         print("Error: La fila ya está llena")
                         return self.play()
-                else:
+                else:  # AI input
                     col, minimax_score = self.minimax_alpha_beta(4, -np.Inf, np.Inf, True)
                     if self.is_valid_location(col):
                         row = self.get_next_open_row(col)
