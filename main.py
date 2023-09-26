@@ -13,7 +13,7 @@ def drop_piece(board, row, col, piece):
 
 
 def is_valid_location(board, col):
-    return board[ROWS - 1][col] == 0  # Check if the top row in the column is empty
+    return board[ROWS - 1][col] == 0
 
 
 def get_next_open_row(board, col):
@@ -23,25 +23,21 @@ def get_next_open_row(board, col):
 
 
 def winning_move(board, piece):
-    # Check horizontal locations
     for c in range(COLS - 3):
         for r in range(ROWS):
             if board[r][c] == piece and board[r][c + 1] == piece and board[r][c + 2] == piece and board[r][c + 3] == piece:
                 return True
 
-    # Check vertical locations
     for c in range(COLS):
         for r in range(ROWS - 3):
             if board[r][c] == piece and board[r + 1][c] == piece and board[r + 2][c] == piece and board[r + 3][c] == piece:
                 return True
 
-    # Check positively sloped diagonals
     for c in range(COLS - 3):
         for r in range(ROWS - 3):
             if board[r][c] == piece and board[r + 1][c + 1] == piece and board[r + 2][c + 2] == piece and board[r + 3][c + 3] == piece:
                 return True
 
-    # Check negatively sloped diagonals
     for c in range(COLS - 3):
         for r in range(3, ROWS):
             if board[r][c] == piece and board[r - 1][c + 1] == piece and board[r - 2][c + 2] == piece and board[r - 3][c + 3] == piece:
@@ -68,32 +64,27 @@ def evaluate_window(window, piece):
 def score_position(board, piece):
     score = 0
 
-    # Score center column
     center_array = [int(i) for i in list(board[:, COLS // 2])]
     center_count = center_array.count(piece)
     score += center_count * 3
 
-    # Score horizontal
     for r in range(ROWS):
         row_array = [int(i) for i in list(board[r, :])]
         for c in range(COLS - 3):
             window = row_array[c:c + 4]
             score += evaluate_window(window, piece)
 
-    # Score vertical
     for c in range(COLS):
         col_array = [int(i) for i in list(board[:, c])]
         for r in range(ROWS - 3):
             window = col_array[r:r + 4]
             score += evaluate_window(window, piece)
 
-    # Score positively sloped diagonal
     for r in range(ROWS - 3):
         for c in range(COLS - 3):
             window = [board[r + i][c + i] for i in range(4)]
             score += evaluate_window(window, piece)
 
-    # Score negatively sloped diagonal
     for r in range(ROWS - 3):
         for c in range(COLS - 3):
             window = [board[r + 3 - i][c + i] for i in range(4)]
@@ -124,9 +115,9 @@ def minimax_alpha_beta(board, depth, alpha, beta, maximizing_player):
                 return None, 100000000000000
             elif winning_move(board, 1):
                 return None, -10000000000000
-            else:  # Game is over, no more valid moves
+            else:
                 return None, 0
-        else:  # Depth is zero
+        else:
             return None, score_position(board, 2)
 
     if maximizing_player:
@@ -146,7 +137,7 @@ def minimax_alpha_beta(board, depth, alpha, beta, maximizing_player):
                     break
         return column, value
 
-    else:  # Minimizing player
+    else:
         value = np.Inf
         column = np.random.choice(valid_locations)
         for col in valid_locations:
@@ -165,6 +156,7 @@ def minimax_alpha_beta(board, depth, alpha, beta, maximizing_player):
 
 
 def print_board(board):
+    print("COLUMNAS: \n1 2 3 4 5 6 7\n-------------")
     for r in range(ROWS - 1, -1, -1):
         for c in range(COLS):
             print(board[r][c], end=" ")
@@ -175,11 +167,10 @@ def print_board(board):
 def play(board, PLAYER_PIECES, AI_PIECES):
     while True:
         game_over = False
-        turn = 0  # Player 1 starts
+        turn = 0
 
         while not game_over:
-            # Player 1 input
-            if turn == 0:
+            if turn == 0:  # Player 1 input
                 col = int(input("Player 1, choose a column (1-7): "))
                 col = col - 1
 
@@ -198,7 +189,7 @@ def play(board, PLAYER_PIECES, AI_PIECES):
                 else:
                     print("Error: La fila ya está llena")
                     return play(board, PLAYER_PIECES, AI_PIECES)
-            else:
+            else:  # AI input
                 col, minimax_score = minimax_alpha_beta(board, 4, -np.Inf, np.Inf, True)
                 if is_valid_location(board, col):
                     row = get_next_open_row(board, col)
